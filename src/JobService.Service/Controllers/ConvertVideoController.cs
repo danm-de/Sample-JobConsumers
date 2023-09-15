@@ -77,8 +77,33 @@
             });
         }
 
-        [HttpPost("{count:int}")]
+        [HttpPost("variant1/{count:int}")]
         public async Task<IActionResult> SubmitJob(int count, [FromServices] IRequestClient<ConvertVideo> client)
+        {
+            var jobIds = new List<Guid>(count);
+
+            var groupId = NewId.Next().ToString();
+
+            for (var i = 0; i < count; i++)
+            {
+                var path = NewId.Next() + ".txt";
+
+                Response<JobSubmissionAccepted> response = await client.GetResponse<JobSubmissionAccepted>(new
+                {
+                    path,
+                    groupId,
+                    Index = i,
+                    count
+                });
+
+                jobIds.Add(response.Message.JobId);
+            }
+
+            return Ok(new { jobIds });
+        }
+
+        [HttpPost("variant2/{count:int}")]
+        public async Task<IActionResult> SubmitJob2(int count, [FromServices] IRequestClient<ConvertVideo2> client)
         {
             var jobIds = new List<Guid>(count);
 

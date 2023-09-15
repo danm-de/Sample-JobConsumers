@@ -6,7 +6,7 @@
     using Microsoft.Extensions.Logging;
 
 
-    public class ConvertVideoJobConsumer : IJobConsumer<ConvertVideo>
+    public class ConvertVideoJobConsumer : IJobConsumer<ConvertVideo>, IJobConsumer<ConvertVideo2>
     {
         readonly ILogger<ConvertVideoJobConsumer> _logger;
 
@@ -28,6 +28,17 @@
             await context.Publish<VideoConverted>(context.Job);
 
             _logger.LogInformation("Converted Video: {GroupId} {Path}", context.Job.GroupId, context.Job.Path);
+        }
+
+        public async Task Run(JobContext<ConvertVideo2> context)
+        {
+            _logger.LogInformation("Converting Video2: {GroupId} {Path}", context.Job.GroupId, context.Job.Path);
+
+            await Task.Delay(TimeSpan.FromMinutes(8));
+
+            await context.Publish<VideoConverted>(context.Job);
+
+            _logger.LogInformation("Converted Video2: {GroupId} {Path}", context.Job.GroupId, context.Job.Path);
         }
     }
 }
